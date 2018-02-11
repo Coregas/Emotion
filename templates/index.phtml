@@ -7,20 +7,24 @@
 <body>
 <div id="wrapper">
     <h1>Jūsų žinutės</h1>
-    <form method="post" action="index.php">
-        <p class="err">
-            <label for="fullname">Vardas, pavardė *</label><br/>
-            <input id="fullname" type="text" name="fullname" value="" />
+    <form method="post" action="/">
+        <p class="<?=$formErrors['first_name']?>">
+            <label for="first_name">Vardas *</label><br/>
+            <input id="first-name" type="text" name="first_name" value="" />
         </p>
-        <p>
+        <p class="<?=$formErrors['last_name']?>">
+            <label for="last_name">Pavardė *</label><br/>
+            <input id="last-name" type="text" name="last_name" value="" />
+        </p>
+        <p class="<?=$formErrors['birthdate']?>">
             <label for="birthdate">Gimimo data *</label><br/>
             <input id="birthdate" type="text" name="birthdate" value="" />
         </p>
-        <p>
+        <p class="<?=$formErrors['email']?>">
             <label for="email">El.pašto adresas</label><br/>
             <input id="email" type="text" name="email" value="" />
         </p>
-        <p class="err">
+        <p class="<?=$formErrors['message']?>">
             <label for="message">Jūsų žinutė *</label><br/>
             <textarea id="message"></textarea>
         </p>

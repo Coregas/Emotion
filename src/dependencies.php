@@ -18,7 +18,31 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
+//SERVICES
+
+$container['form_validator'] = function ($c) {
+    return new \Emotion\Service\FormValidator();
+};
+
+//CONTROLLERS
 $container['index_controller'] = function ($c) {
     $view = $c->get('renderer');
-    return new \Emotion\Controller\Index($view);
+    $formValidator = $c->get('form_validator');
+    $userGateway = $c->get('user_gateway');
+    return new \Emotion\Controller\Index($view, $formValidator, $userGateway);
 };
+
+//GATEWAYS
+$container['db'] = function ($container) {
+    $capsule = new \Illuminate\Database\Capsule\Manager;
+    $capsule->addConnection($container['settings']['db']);
+    $capsule->setAsGlobal();
+    $capsule->bootEloquent();
+
+    return $capsule;
+};
+$container['user_gateway'] = function ($c) {
+    $table = $c->get('db')->table('user');
+    return new \Emotion\Gateway\User($table);
+};
+
