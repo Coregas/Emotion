@@ -1,0 +1,84 @@
+body {
+    margin: 0;
+    padding: 5px;
+    color: #444444;
+}
+
+body, textarea, input {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+h1 {
+    margin: 0;
+    padding: 5px;
+    text-align: center;
+}
+
+a {
+    color: #268ce3;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+form {
+    margin: 0;
+    padding: 5px;
+    background-color: #f9f9f9;
+}
+
+p {
+    margin: 0;
+    padding: 5px;
+}
+
+input, textarea {
+    margin: 0;
+    padding: 2px;
+    border: 1px solid #d9e0e5;
+}
+
+#fullname, #email, #birthdate, textarea {
+    width: 270px;
+}
+
+textarea {
+    height: 50px;
+}
+
+ul {
+    margin: 0;
+    padding: 5px 0;
+    list-style: none;
+}
+
+li {
+    margin: 0;
+    padding: 5px;
+}
+
+span {
+    float: right;
+    color: #999999;
+}
+
+#wrapper {
+    width: 300px;
+    margin: 0 auto;
+}
+
+#pages {
+    text-align: center;
+}
+
+.err label {
+    color: #dd0000;
+}
+
+.err input, .err textarea {
+    border: 1px solid #dd0000;
+}
