@@ -10,23 +10,23 @@
     <form method="post" action="/">
         <p class="<?=$formErrors['first_name']?>">
             <label for="first_name">Vardas *</label><br/>
-            <input id="first-name" type="text" name="first_name" value="" />
+            <input id="first-name" type="text" name="first_name" value="<?=$fromValues['first_name']?>" />
         </p>
         <p class="<?=$formErrors['last_name']?>">
             <label for="last_name">Pavardė *</label><br/>
-            <input id="last-name" type="text" name="last_name" value="" />
+            <input id="last-name" type="text" name="last_name" value="<?=$fromValues['last_name']?>" />
         </p>
         <p class="<?=$formErrors['birthdate']?>">
             <label for="birthdate">Gimimo data *</label><br/>
-            <input id="birthdate" type="text" placeholder="YYYY-MM-DD" name="birthdate" value="" />
+            <input id="birthdate" type="text" placeholder="YYYY-MM-DD" name="birthdate" value="<?=$fromValues['birthdate']?>" />
         </p>
         <p class="<?=$formErrors['email']?>">
             <label for="email">El.pašto adresas</label><br/>
-            <input id="email" type="text" name="email" value="" />
+            <input id="email" type="text" name="email" value="<?=$fromValues['email']?>" />
         </p>
         <p class="<?=$formErrors['message']?>">
             <label for="message">Jūsų žinutė *</label><br/>
-            <textarea id="message" name="message"></textarea>
+            <textarea id="message" name="message"><?=$fromValues['message']?></textarea>
         </p>
         <p>
             <span>* - privalomi laukai</span>

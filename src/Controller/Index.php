@@ -2,6 +2,7 @@
 namespace Emotion\Controller;
 use Emotion\Service\FormValidator;
 use Slim\Http\Request;
+use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
 use Emotion\Gateway\User;
 use Emotion\Gateway\Message;
@@ -38,10 +39,17 @@ class Index
         $this->userGateway = $userGateway;
         $this->messageGateway = $messageGateway;
     }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function mainAction($request, $response)
     {
-        $this->validateForm($request);
-
+        if($this->validateForm($request)) {
+            return $response->withRedirect('/', 303);
+        };
         return $this->view->render($response, 'index.phtml', [
             'formErrors' => $this->formValidator->getErrors(),
             'fromValues' => $this->formValidator->getEntries()
@@ -81,6 +89,7 @@ class Index
                     'message' => $this->formValidator->getEntry('message'),
                     'time' => new DateTime()
                 ]);
+                return true;
             }
             }
         } else {
@@ -93,5 +102,6 @@ class Index
             ]);
 
         }
+        return false;
     }
 }
