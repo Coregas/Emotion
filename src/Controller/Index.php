@@ -4,6 +4,8 @@ use Emotion\Service\FormValidator;
 use Slim\Http\Request;
 use Slim\Views\PhpRenderer;
 use Emotion\Gateway\User;
+use Emotion\Gateway\Message;
+use DateTime;
 
 class Index
 {
@@ -16,23 +18,30 @@ class Index
      * @var FormValidator
      */
     private $formValidator;
-
+    /**
+     * @var User
+     */
     private $userGateway;
+    /**
+     * @var Message
+     */
+    private $messageGateway;
 
     public function __construct(
         PhpRenderer $view,
         FormValidator $formValidator,
-        User $userGateway
+        User $userGateway,
+        Message $messageGateway
     ) {
         $this->view = $view;
         $this->formValidator = $formValidator;
         $this->userGateway = $userGateway;
+        $this->messageGateway = $messageGateway;
     }
     public function mainAction($request, $response)
     {
         $this->validateForm($request);
 
-        dump($this->userGateway->getOneUser());
         return $this->view->render($response, 'index.phtml', [
             'formErrors' => $this->formValidator->getErrors(),
             'fromValues' => $this->formValidator->getEntries()
@@ -46,8 +55,8 @@ class Index
     {
         if ($this->formValidator->isFormSubmited()) {
             $this->formValidator->addEntries([
-                'first_name' => $request->getParam('first-name'),
-                'last_name' => $request->getParam('last-name'),
+                'first_name' => $request->getParam('first_name'),
+                'last_name' => $request->getParam('last_name'),
                 'birthdate' => $request->getParam('birthdate'),
                 'email' => $request->getParam('email'),
                 'message' => $request->getParam('message'),
@@ -59,7 +68,21 @@ class Index
             $this->formValidator->addRule('email', 'err', 'email');
             $this->formValidator->addRule('message', 'err', 'required');
             $this->formValidator->validate();
-            dump($this->formValidator->getErrors());
+            if (!$this->formValidator->foundErrors()) {
+
+              $userId =  $this->userGateway->insert([
+                   'first_name' => $this->formValidator->getEntry('first_name'),
+                   'last_name' => $this->formValidator->getEntry('last_name'),
+                   'birthdate' => $this->formValidator->getEntry('birthdate'),
+               ]);
+            if ($userId) {
+                $this->messageGateway->insert([
+                    'user_id' => $userId,
+                    'message' => $this->formValidator->getEntry('message'),
+                    'time' => new DateTime()
+                ]);
+            }
+            }
         } else {
             $this->formValidator->addEntries([
                 'first_name' => '',

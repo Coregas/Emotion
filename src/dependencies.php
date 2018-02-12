@@ -29,7 +29,13 @@ $container['index_controller'] = function ($c) {
     $view = $c->get('renderer');
     $formValidator = $c->get('form_validator');
     $userGateway = $c->get('user_gateway');
-    return new \Emotion\Controller\Index($view, $formValidator, $userGateway);
+    $messageGateway = $c->get('message_gateway');
+    return new \Emotion\Controller\Index(
+        $view,
+        $formValidator,
+        $userGateway,
+        $messageGateway
+    );
 };
 
 //GATEWAYS
@@ -44,5 +50,10 @@ $container['db'] = function ($container) {
 $container['user_gateway'] = function ($c) {
     $table = $c->get('db')->table('user');
     return new \Emotion\Gateway\User($table);
+};
+
+$container['message_gateway'] = function ($c) {
+    $table = $c->get('db')->table('message');
+    return new \Emotion\Gateway\Message($table);
 };
 
