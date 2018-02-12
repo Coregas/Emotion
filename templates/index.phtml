@@ -3,6 +3,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Žinutės</title>
     <link rel="stylesheet" media="screen" type="text/css" href="css/screen.css" />
+    <script
+            src="http://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -10,15 +14,15 @@
     <form method="post" action="/">
         <p class="<?=$formErrors['first_name']?>">
             <label for="first_name">Vardas *</label><br/>
-            <input id="first-name" type="text" name="first_name" value="<?=$fromValues['first_name']?>" />
+            <input id="first_name" type="text" name="first_name" value="<?=$fromValues['first_name']?>" required/>
         </p>
         <p class="<?=$formErrors['last_name']?>">
             <label for="last_name">Pavardė *</label><br/>
-            <input id="last-name" type="text" name="last_name" value="<?=$fromValues['last_name']?>" />
+            <input id="last_name" type="text" name="last_name" value="<?=$fromValues['last_name']?>" required/>
         </p>
         <p class="<?=$formErrors['birthdate']?>">
             <label for="birthdate">Gimimo data *</label><br/>
-            <input id="birthdate" type="text" placeholder="YYYY-MM-DD" name="birthdate" value="<?=$fromValues['birthdate']?>" />
+            <input id="birthdate" type="text" placeholder="YYYY-MM-DD" name="birthdate" value="<?=$fromValues['birthdate']?>" required/>
         </p>
         <p class="<?=$formErrors['email']?>">
             <label for="email">El.pašto adresas</label><br/>
@@ -26,12 +30,12 @@
         </p>
         <p class="<?=$formErrors['message']?>">
             <label for="message">Jūsų žinutė *</label><br/>
-            <textarea id="message" name="message"><?=$fromValues['message']?></textarea>
+            <textarea id="message" name="message" required><?=$fromValues['message']?></textarea>
         </p>
         <p>
             <span>* - privalomi laukai</span>
-            <input type="submit" value="Skelbti" />
-            <img src="img/ajax-loader.gif" alt="" />
+            <input id="message_submit" type="submit" value="Skelbti" />
+            <img id="loader-gif" class="hidden" src="img/ajax-loader.gif" alt="loader" />
         </p>
     </form>
     <ul>
@@ -69,4 +73,5 @@
     </p>
 </div>
 </body>
+<script src="js/message_board.js"></script>
 </html>

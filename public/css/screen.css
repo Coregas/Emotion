@@ -41,9 +41,12 @@ input, textarea {
     padding: 2px;
     border: 1px solid #d9e0e5;
 }
+.hidden {
+    display: none;
+}
 
-#first-name,
-#last-name,
+#first_name,
+#last_name,
 #email,
 #birthdate,
 textarea {

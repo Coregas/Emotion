@@ -56,8 +56,16 @@ class Index
         ]);
     }
 
+    public function ajaxAction($request, $response)
+    {
+        if($this->validateForm($request)) {
+            return json_encode('notcool');
+        };
+    }
+
     /**
-     * @param Request $request
+     * @param $request
+     * @return bool
      */
     private function validateForm($request)
     {
@@ -77,20 +85,19 @@ class Index
             $this->formValidator->addRule('message', 'err', 'required');
             $this->formValidator->validate();
             if (!$this->formValidator->foundErrors()) {
-
-              $userId =  $this->userGateway->insert([
-                   'first_name' => $this->formValidator->getEntry('first_name'),
-                   'last_name' => $this->formValidator->getEntry('last_name'),
-                   'birthdate' => $this->formValidator->getEntry('birthdate'),
-               ]);
-            if ($userId) {
-                $this->messageGateway->insert([
-                    'user_id' => $userId,
-                    'message' => $this->formValidator->getEntry('message'),
-                    'time' => new DateTime()
+                $userId = $this->userGateway->insert([
+                    'first_name' => $this->formValidator->getEntry('first_name'),
+                    'last_name' => $this->formValidator->getEntry('last_name'),
+                    'birthdate' => $this->formValidator->getEntry('birthdate'),
                 ]);
-                return true;
-            }
+                if ($userId) {
+                    $this->messageGateway->insert([
+                        'user_id' => $userId,
+                        'message' => $this->formValidator->getEntry('message'),
+                        'time' => new DateTime()
+                    ]);
+                    return true;
+                }
             }
         } else {
             $this->formValidator->addEntries([
