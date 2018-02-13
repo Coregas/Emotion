@@ -13,8 +13,12 @@ class User extends AbstractGateway
         parent::__construct($this->table);
     }
 
-    public function getOneUser()
+    /**
+     * @param $userId
+     * @return \Illuminate\Support\Collection
+     */
+    public function getUserById($userId)
     {
-        return $this->table->find(1);
+        return $this->table->where('id', '=', $userId)->get()->first();
     }
 }

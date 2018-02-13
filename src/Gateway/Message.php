@@ -9,10 +9,18 @@ class Message extends AbstractGateway
 
     public function __construct(
         Builder $table
-    )
-    {
+    ) {
         $this->table = $table;
         parent::__construct($this->table);
+    }
+
+    /**
+     * @param $messageId
+     * @return mixed
+     */
+    public function getMessageById($messageId)
+    {
+        return $this->table->where('id', '=', $messageId)->get()->first();
     }
 
 }

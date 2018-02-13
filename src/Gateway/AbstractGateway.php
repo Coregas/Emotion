@@ -23,7 +23,7 @@ abstract class AbstractGateway
      */
     public function insert($set)
     {
-        return $this->table->insert($set);
+        return $this->table->insertGetId($set);
     }
 
     /**

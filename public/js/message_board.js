@@ -7,8 +7,8 @@ $(function() {
     var hasFormErrors = false;
     function ajaxSubmitMessage(submit) {
         var form = submit.closest('form'),
-            firstNameField = $('#first-name'),
-            lastNameField = $('#last-name'),
+            firstNameField = $('#first_name'),
+            lastNameField = $('#last_name'),
             birthdateField = $('#birthdate'),
             emailField = $('#email'),
             messageField = $('#message');
@@ -22,6 +22,7 @@ $(function() {
             $.ajax({
                 url:'/new-message',
                 method: 'POST',
+                dataType: "json",
                 data: {
                     'first_name':firstNameField.val(),
                     'last_name':lastNameField.val(),
@@ -29,7 +30,13 @@ $(function() {
                     'email': emailField.val(),
                     'message': messageField.val()
                 },
-                success: function (result) {
+                success: function (data) {
+
+                    if (data.status === 'error') {
+                        addErrorFromAjaxResponse(data.data);
+                    } else {
+                        addNewMessage(data.data);
+                    }
                     setTimeout(function(){
                         enableFormFiels(form);
                         toggleLoader(submit);
@@ -40,6 +47,48 @@ $(function() {
         }
     }
 
+    /*
+    builds and adds a new entry to the message board
+     */
+    function addNewMessage(data)
+    {
+       var message = '<li>' +
+           '<span>'+ data.message.time +'</span>';
+
+       if (data.user.email !== 'undefined') {
+           message += '<a href="'+ data.user.email +'">'+ data.user.first_name +' '+ data.user.last_name +'</a>';
+       } else {
+           message += data.user.first_name +' '+ data.user.last_name;
+       }
+           message += '<br>' +
+               data.message.message +
+           '</li>';
+
+    }
+    /*
+    adds error class to incorrectly filled fields
+     */
+    function addErrorFromAjaxResponse(data)
+    {
+        removeErrorClassFromFields();
+        $.each(data, function (key, value) {
+           var element =  $('[name="' + key + '"]').parent('p');
+           if (!element.hasClass(value)) {
+               element.addClass(value);
+           }
+        });
+    }
+
+    /*
+    removes error class from all input fields
+     */
+    function removeErrorClassFromFields()
+    {
+       var elements = $('input, textarea')  ;
+       $.each(elements, function (key, element) {
+          $(element).parent('p').removeClass('err');
+       });
+    }
     /*
     toggles between submit button and loader gif
      */
