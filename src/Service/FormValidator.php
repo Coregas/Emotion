@@ -1,6 +1,7 @@
 <?php
 namespace Emotion\Service;
 use DateTime;
+use Slim\Collection;
 
 class FormValidator
 {
@@ -16,6 +17,16 @@ class FormValidator
      * @var array
      */
     private $errors = [];
+    /**
+     * @var Collection
+     */
+    private $settings;
+
+    public function __construct(
+        Collection $settings
+    ) {
+        $this->settings = $settings;
+    }
 
     /**
      * @param $fieldName
@@ -159,6 +170,19 @@ class FormValidator
                         $this->errors[$rule->getFieldName()] = $rule->getMessage();
                         return;
                     }
+                    if ($value > $this->settings['form_field_rules']['name_max_length']) {
+                        $this->errors[$rule->getFieldName()] = $rule->getMessage();
+                        return;
+                    }
+                    break;
+
+                case 'message' :
+
+                    if ($value > $this->settings['form_field_rules']['name_max_length']) {
+                        $this->errors[$rule->getFieldName()] = $rule->getMessage();
+                        return;
+                    }
+                    break;
                     break;
 
                 case 'birth_date' :

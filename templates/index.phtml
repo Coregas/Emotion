@@ -14,15 +14,15 @@
     <form method="post" action="/">
         <p class="<?=$formErrors['first_name']?>">
             <label for="first_name">Vardas *</label><br/>
-            <input id="first_name" type="text" name="first_name" value="<?=$fromValues['first_name']?>" required/>
+            <input id="first_name" type="text" name="first_name" maxlength="<?=$formFieldRules['name_max_length']?>" value="<?=$fromValues['first_name']?>" required/>
         </p>
         <p class="<?=$formErrors['last_name']?>">
             <label for="last_name">Pavardė *</label><br/>
-            <input id="last_name" type="text" name="last_name" value="<?=$fromValues['last_name']?>" required/>
+            <input id="last_name" type="text" name="last_name" maxlength="<?=$formFieldRules['name_max_length']?>" value="<?=$fromValues['last_name']?>" required/>
         </p>
         <p class="<?=$formErrors['birthdate']?>">
             <label for="birthdate">Gimimo data *</label><br/>
-            <input id="birthdate" type="text" placeholder="YYYY-MM-DD" name="birthdate" value="<?=$fromValues['birthdate']?>" required/>
+            <input id="birthdate" type="text" placeholder="<?=$formFieldRules['birthdate_format_example']?>" name="birthdate" value="<?=$fromValues['birthdate']?>" required/>
         </p>
         <p class="<?=$formErrors['email']?>">
             <label for="email">El.pašto adresas</label><br/>
@@ -30,7 +30,7 @@
         </p>
         <p class="<?=$formErrors['message']?>">
             <label for="message">Jūsų žinutė *</label><br/>
-            <textarea id="message" name="message" required><?=$fromValues['message']?></textarea>
+            <textarea id="message" name="message" maxlength="<?=$formFieldRules['message_max_length']?>" required><?=$fromValues['message']?></textarea>
         </p>
         <p>
             <span>* - privalomi laukai</span>
@@ -39,38 +39,50 @@
         </p>
     </form>
     <ul id="message-container">
-        <li>
-            <strong>Šiuo metu žinučių nėra. Būk pirmas!</strong>
-        </li>
-        <li>
-            <span>2010 01 01 08:59</span> <a href="mailto:example@example.com">Vardas Pavardė</a>, 13 m.<br/>
-            Įkėlėme šeimos dienos akciją. Dėl papildomos medžiagos užtrukome šiek tiek ilgiau nei įprasta.
-        </li>
-        <li>
-            <span>2010 01 01 08:59</span> Vardas Pavardė, 75 m. <br/>
-            Įkėlėme šeimos dienos akciją. Dėl papildomos medžiagos užtrukome šiek tiek ilgiau nei įprasta.
-        </li>
-        <li>
-            <span>2010 01 01 08:59</span> Vardas Pavardė, 10 m. <br/>
-            Įkėlėme šeimos dienos akciją. Dėl papildomos medžiagos užtrukome šiek tiek ilgiau nei įprasta.
-        </li>
-        <li>
-            <span>2010 01 01 08:59</span> <a href="mailto:example@example.com">Vardas Pavardė</a>, 25 m. <br/>
-            Įkėlėme šeimos dienos akciją. Dėl papildomos medžiagos užtrukome šiek tiek ilgiau nei įprasta.
-        </li>
-        <li>
-            <span>2010 01 01 08:59</span> Vardas Pavardė, 26 m. <br/>
-            Įkėlėme šeimos dienos akciją. Dėl papildomos medžiagos užtrukome šiek tiek ilgiau nei įprasta.
-        </li>
+
+        <?php if($messagesPagination->total() == 0):?>
+            <li>
+                <strong>Šiuo metu žinučių nėra. Būk pirmas!</strong>
+            </li>
+        <?php else:?>
+            <?php foreach ($messagesForPage as $message):?>
+                <li>
+                    <div>
+                        <span><?=$message->getTime()->format('Y m d H:i')?></span>
+                        <?php if ($message->getUser()->getEmail() != ''):?>
+                        <a href="mailto:<?=$message->getUser()->getEmail()?>"><?=$message->getUser()->getFirstName()?> <?=$message->getUser()->getLastName()?></a>
+                        <?php else:?>
+                        <?=$message->getUser()->getFirstName()?> <?=$message->getUser()->getLastName()?>
+                        <?php endif;?>
+                        , <?=$message->getUser()->getAge()?> m.
+                    </div>
+                    <div>
+                        <?=$message->getMessage()?>
+                    </div>
+                </li>
+            <?php endforeach;?>
+        <?php endif;?>
     </ul>
     <p id="pages">
-        <a href="#" title="atgal">atgal</a>
-        <a href="#" title="1">1</a>
-        2
-        <a href="#" title="3">3</a>
-        <a href="#" title="4">4</a>
-        <a href="#" title="toliau">toliau</a>
+        <?php if ($messagesPagination->total() > 0):?>
+            <?php if($messagesPagination->currentPage() > 1):?>
+                <a href="/?page=<?=$messagesPagination->currentPage() - 1?>" title="atgal">atgal</a>
+            <?php endif;?>
+
+            <?php for($i = 1; $i <= $messagesPagination->lastPage(); $i++):?>
+                <?php if($i == $messagesPagination->currentPage()):?>
+                    <?=$i?>
+                <?php else:?>
+                    <a href="/?page=<?=$i?>" title="<?=$i?>"><?=$i?></a>
+                <?php endif;?>
+            <?php endfor;?>
+
+            <?php if($messagesPagination->currentPage() < $messagesPagination->lastPage()):?>
+                <a href="/?page=<?=$messagesPagination->currentPage() + 1?>" title="toliau">toliau</a>
+            <?php endif;?>
+        <?php endif;?>
     </p>
+
 </div>
 </body>
 <script src="js/message_board.js"></script>

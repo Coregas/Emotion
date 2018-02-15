@@ -28,5 +28,15 @@ return [
         'collation' => 'utf8_unicode_ci',
         'prefix'    => '',
         ],
+
+    'pagination' => [
+            'perPage' => 5
+        ],
+    'form_field_rules' => [
+        'birthdate_format'=> 'Y-m-d',
+        'birthdate_format_example'=> 'YYYY-MM-DD',
+        'name_max_length' => 70,
+        'message_max_length' => 200
+    ]
     ],
 ];

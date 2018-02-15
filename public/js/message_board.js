@@ -7,12 +7,14 @@ $(function() {
     var hasFormErrors = false;
     function ajaxSubmitMessage(submit) {
         var form = submit.closest('form'),
+            hasFormErrors = false,
             firstNameField = $('#first_name'),
             lastNameField = $('#last_name'),
             birthdateField = $('#birthdate'),
             emailField = $('#email'),
             messageField = $('#message');
 
+        removeErrorClassFromFields();
         validateFormFields(form);
         validateEmail(emailField);
         if (hasFormErrors === false) {
@@ -32,15 +34,17 @@ $(function() {
                 },
                 success: function (data) {
 
-                    if (data.status === 'error') {
-                        addErrorFromAjaxResponse(data.data);
-                    } else {
-                        addNewMessage(data.data);
-                    }
                     setTimeout(function(){
                         enableFormFiels(form);
                         toggleLoader(submit);
-                        }, 3000);
+
+                        if (data.status === 'error') {
+                            addErrorFromAjaxResponse(data.data);
+                        } else {
+                            addNewMessage(data.data);
+                        }
+                    }, 2000);
+
 
                 }
             });
@@ -52,18 +56,33 @@ $(function() {
      */
     function addNewMessage(data)
     {
-       var message = '<li>' +
-           '<span>'+ data.message.time +'</span>';
+       var messagesContainer = $('#message-container'),
+           message = '<li>' +
+               '<div>' +
+               '<span>'+ data.message.time +'</span>';
 
-       if (data.user.email !== 'undefined') {
-           message += '<a href="'+ data.user.email +'">'+ data.user.first_name +' '+ data.user.last_name +'</a>';
+       if (data.user.email !== '') {
+           message += '<a href="mailto:'+ data.user.email +'">'+ data.user.first_name +' '+ data.user.last_name +'</a>';
        } else {
            message += data.user.first_name +' '+ data.user.last_name;
        }
-           message += '<br>' +
-               data.message.message +
+           message += ', ' + data.user.age + 'm. </div>' +
+               '<div>' +
+                    data.message.message +
+               '</div>' +
            '</li>';
+       
+        messagesContainer.prepend(message);
+        removeLastVisibleMessage(messagesContainer);
+    }
 
+    /*
+    removes last visible message
+     */
+    function removeLastVisibleMessage(messagesContainer) {
+      if (messagesContainer.children().length > 5) {
+          messagesContainer.find('li:last-child').remove();
+      }
     }
     /*
     adds error class to incorrectly filled fields
@@ -123,6 +142,7 @@ $(function() {
         form.find('input, textarea').each(function () {
             if($(this).prop('required') === true && $(this).prop('name') !== 'undefined') {
                 if ($(this).val() === '') {
+                    console.log($(this).prop('required'));
                     addErrorClassToElement($(this).closest('p'));
                 }
             }

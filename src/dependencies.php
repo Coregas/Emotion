@@ -21,7 +21,28 @@ $container['logger'] = function ($c) {
 //SERVICES
 
 $container['form_validator'] = function ($c) {
-    return new \Emotion\Service\FormValidator();
+    return new \Emotion\Service\FormValidator($c->get('settings'));
+};
+
+$container['message_factory'] = function () {
+    return new \Emotion\Service\Message\Factory\MessageFactory();
+};
+
+$container['user_factory'] = function () {
+    return new \Emotion\Service\User\Factory\UserFactory();
+};
+
+$container['message_functions'] = function ($c) {
+    $messageGateway = $c->get('message_gateway');
+    $userGateway = $c->get('user_gateway');
+    $messageFactory = $c->get('message_factory');
+    $userFactory = $c->get('user_factory');
+    return new \Emotion\Service\Message\MessageFunctions(
+        $messageGateway,
+        $userGateway,
+        $messageFactory,
+        $userFactory
+    );
 };
 
 //CONTROLLERS
@@ -30,11 +51,14 @@ $container['index_controller'] = function ($c) {
     $formValidator = $c->get('form_validator');
     $userGateway = $c->get('user_gateway');
     $messageGateway = $c->get('message_gateway');
+    $messageFunctionsService = $c->get('message_functions');
     return new \Emotion\Controller\Index(
         $view,
         $formValidator,
         $userGateway,
-        $messageGateway
+        $messageGateway,
+        $messageFunctionsService,
+        $c->get('settings')
     );
 };
 
@@ -54,6 +78,9 @@ $container['user_gateway'] = function ($c) {
 
 $container['message_gateway'] = function ($c) {
     $table = $c->get('db')->table('message');
-    return new \Emotion\Gateway\Message($table);
+    return new \Emotion\Gateway\Message(
+        $table,
+        $c->get('settings')
+    );
 };
 

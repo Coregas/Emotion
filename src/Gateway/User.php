@@ -21,4 +21,9 @@ class User extends AbstractGateway
     {
         return $this->table->where('id', '=', $userId)->get()->first();
     }
+
+    public function getUsersByIds($userIds)
+    {
+        return $this->table->whereIn('id',$userIds)->get();
+    }
 }

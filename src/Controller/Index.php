@@ -1,12 +1,14 @@
 <?php
 namespace Emotion\Controller;
 use Emotion\Service\FormValidator;
+use Slim\Collection;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
 use Emotion\Gateway\User;
 use Emotion\Gateway\Message;
 use DateTime;
+use Emotion\Service\Message\MessageFunctions;
 
 class Index
 {
@@ -27,17 +29,30 @@ class Index
      * @var Message
      */
     private $messageGateway;
+    /**
+     * @var MessageFunctions
+     */
+    private $messageFunctionsService;
+    /**
+     * @var Collection
+     */
+    private $settings;
+
 
     public function __construct(
         PhpRenderer $view,
         FormValidator $formValidator,
         User $userGateway,
-        Message $messageGateway
+        Message $messageGateway,
+        MessageFunctions $messageFunctionsService,
+        Collection $settings
     ) {
         $this->view = $view;
         $this->formValidator = $formValidator;
         $this->userGateway = $userGateway;
         $this->messageGateway = $messageGateway;
+        $this->messageFunctionsService = $messageFunctionsService;
+        $this->settings = $settings;
     }
 
     /**
@@ -47,6 +62,14 @@ class Index
      */
     public function mainAction($request, $response)
     {
+        $pageNo = intval($request->getParam('page'));
+        if ($pageNo == 0 || $pageNo == 1) {
+            $messagesPagination = $this->messageFunctionsService->getMessagePagination();
+            $messagesForPage = $this->messageFunctionsService->getMessagesFroPage();
+        } else {
+            $messagesPagination = $this->messageFunctionsService->getMessagePagination($pageNo);
+            $messagesForPage = $this->messageFunctionsService->getMessagesFroPage($pageNo);
+        }
         if($this->validateForm($request)) {
             $userId = $this->insertUser();
             if ($userId) {
@@ -57,9 +80,13 @@ class Index
 
         }
 
+
         return $this->view->render($response, 'index.phtml', [
+            'messagesPagination' => $messagesPagination,
+            'messagesForPage' => $messagesForPage,
             'formErrors' => $this->formValidator->getErrors(),
-            'fromValues' => $this->formValidator->getEntries()
+            'fromValues' => $this->formValidator->getEntries(),
+            'formFieldRules' => $this->settings['form_field_rules']
         ]);
     }
 
@@ -75,7 +102,9 @@ class Index
             if ($userId) {
                 $messageId = $this->insertMessage($userId);
                 if ($messageId) {
-                    return json_encode($this->getNewMessageData($userId, $messageId));
+                    $data = $this->getNewMessageData($userId, $messageId);
+                    $data['last_page'] = $this->getPaginationCount();
+                    return json_encode($data);
                 }
                 $data['status'] = 'error';
                 return json_encode($data);
@@ -98,7 +127,6 @@ class Index
 
         $user = $this->userGateway->getUserById($userId);
         $now = DateTime::createFromFormat('Y-m-d', date('Y-m-d'));
-
         $userBirthday = DateTime::createFromFormat('Y-m-d H:m:s',$user->birthdate);
 
         $age = $now->diff($userBirthday);
@@ -111,6 +139,15 @@ class Index
         ];
 
         return $data;
+    }
+
+
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    private function getPaginationCount()
+    {
+        return $this->messageGateway->getMessagePagination();
     }
     /**
      * @param $request
